@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="GetAllCustomersFlow" doc:id="3ba68ffe-3a52-4a19-9312-f61a553359f1" >
+		<db:select doc:name="Select" doc:id="4b0e2a5a-5d24-400f-8433-b7af8ce8e275" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from customers]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="6d8adb58-474d-4a1f-8d23-c6b8c38dd665" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	CustID: payload01.Cid,
+	CustName: payload01.customerName default "",
+	CustPhone: payload01.customerPhone as Number default 0,
+	CustCity: payload01.city default "",
+	CustPostalCode: payload01.postalCode default 0,
+	CustMail: payload01.customerMail default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="GetCustomerByIDFlow" doc:id="9dcd1c2a-19a9-4a6a-8955-22c16b39924e" >
+		<db:query-single doc:name="Query single" doc:id="1043982a-b6c9-4d61-9ef7-71401586ff2a" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from customers where Cid= :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	id: vars.Id
+}]]]></db:input-parameters>
+		</db:query-single>
+		<ee:transform doc:name="Transform Message" doc:id="3dab15bc-a3d4-4fb9-be2c-71fef768adab" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	CustID: payload.Cid,
+	CustName: payload.customerName default "",
+	CustPhone: payload.customerPhone as Number default 0,
+	CustCity: payload.city default "",
+	CustPostalCode: payload.postalCode default 0,
+	CustMail: payload.customerMail default ""
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

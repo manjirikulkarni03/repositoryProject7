@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="Customer" format="json">
+      <types:shape format="weave" example="examples/customer metadata.json"><![CDATA[%dw 2.0
+
+type Customer = Array<{|  CustID: String,   CustName: String,   CustPhone: Number {"typeId": "double"},   CustCity: String,   CustPostalCode: Number {"typeId": "int"},   CustMail: String|}> {"example": "[{\\\"CustID\\\":\\\"C1001\\\",\\\"CustName\\\":\\\"Charlie Chaplin\\\",\\\"CustPhone\\\":8080750356,\\\"CustCity\\\":\\\"New York\\\",\\\"CustPostalCode\\\":245876,\\\"CustMail\\\":\\\"charlie.chaplin@gmail.com\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#6d8adb58-474d-4a1f-8d23-c6b8c38dd665">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Customer"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3dab15bc-a3d4-4fb9-be2c-71fef768adab">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Customer"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
